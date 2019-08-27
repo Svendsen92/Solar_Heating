@@ -4,18 +4,18 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
-#include <netinet/in.h> 
-#include <stdlib.h> 
-#include <string.h> 
-#include <sys/socket.h> 
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
 
+#include <arpa/inet.h>
 
 class tcp_ip{
 
     private:
         int ds_sock;
         int ds_sock_acc;
-        
 
     public:
         tcp_ip();
