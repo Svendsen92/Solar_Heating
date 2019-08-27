@@ -1,6 +1,5 @@
 #include "tcp_ip.h"
 
-
 tcp_ip::tcp_ip(){}
 tcp_ip::~tcp_ip(){}
 
@@ -11,12 +10,12 @@ void tcp_ip::connect(int port){
     struct sockaddr_in my_addr;
     if ((ds_sock=socket(AF_INET,SOCK_STREAM,0)) == 0){
         std::cout << "socket failed\n" << std::endl;
-        exit(0);
+        //exit(0);
     }
 
     if (setsockopt(ds_sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))){
         std::cout << "setsockopt failed\n" << std::endl;
-        exit(0);
+        //exit(0);
     }
 
     memset(&my_addr,0,sizeof(my_addr));
@@ -26,9 +25,9 @@ void tcp_ip::connect(int port){
 
     if(bind(ds_sock,(struct sockaddr *)&my_addr,sizeof(my_addr))<0){
         std::cout << "bind failed\n" << std::endl;
-        exit(0);
+        //exit(0);
     }
-        
+
     if (listen(ds_sock,2) < 0){
         std::cout << "listen timed-out\n" << std::endl;
         exit(0);
@@ -39,7 +38,7 @@ void tcp_ip::connect(int port){
 
     if((ds_sock_acc=accept(ds_sock,(struct sockaddr *)&addr,&sin_size))<1){
         std::cout << "accept failed\n" << std::endl;
-        exit(0);
+        //exit(0);
     }
 }
 
@@ -55,7 +54,7 @@ void tcp_ip::sendMsg(std::string msg){
 
     if (send(ds_sock_acc, msg.c_str(), strlen(msg.c_str()), 0) < 0){
         std::cout << "falied to send message\n" << std::endl;
-        exit(0);
+        //exit(0);
     }
 }
 

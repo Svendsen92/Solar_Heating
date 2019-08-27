@@ -35,27 +35,44 @@ std::string activities::_myJson(std::string json, std::string key){
 }
 
 std::string activities::loginActivity(std::string json){
-    std::cout << "login activity" << std::endl;
+    std::cout << "activities_lib >> login activity" << std::endl;
 
     if (_myJson(json, "userName") == "admin" && _myJson(json, "passWord") == "1234"){
-        std::cout << "access granted\n" << std::endl;
+        std::cout << "activities_lib >> access granted\n" << std::endl;
         return "{login: 1}";
     }else{
-        std::cout << "access denied\n" << std::endl;
+        std::cout << "activities_lib >> access denied\n" << std::endl;
         return "{login: 0}";
     }
 }
 
 
-std::string activities::overViewActivity(std::string json){
-    std::cout << "overView activity\n" << std::endl;
-    
-    return "{state: overView, newData: 0, roofTemp: 64, houseTemp: 32}";
+std::string activities::overViewActivity(double *temp, double *kWh, std::string relayState){
+    std::cout << "activities_lib >> overView activity\n" << std::endl;
+
+    std::stringstream tmpCurkWh, tmpHourkWh, tmpDaykWh;
+    tmpCurkWh << std::setprecision(2) << kWh[0];
+    tmpHourkWh << std::setprecision(2) << kWh[1];
+    tmpDaykWh << std::setprecision(2) << kWh[2];
+
+    std::string str = "";
+    str += "{state: overView, newData: 0, ";
+    str += "relayState: " + relayState + ", ";
+    str += "roofTemp: " + std::to_string(int(temp[0] +0.5)) + ", ";
+    str += "houseTemp: " + std::to_string(int(temp[1] +0.5)) + ", ";
+    str += "convexInTemp: " + std::to_string(int(temp[2] +0.5)) + ", ";
+    str += "convexOutTemp: " + std::to_string(int(temp[3] +0.5)) + ", ";
+    str += "currentkWh: " + tmpCurkWh.str() + ", ";
+    str += "hourlykWh: " + tmpHourkWh.str() + ", ";
+    str += "dailykWh: " + tmpDaykWh.str();
+    str += "}";
+
+    return str;
 }
 
 
 std::string activities::setParameterActivity(std::string json){
-    std::cout << "setParameter activity\n";
+    std::cout << "activities_lib >> setParameter activity\n";
 
     std::string data = "";
     if (_myJson(json, "newData") == "true"){
@@ -68,8 +85,68 @@ std::string activities::setParameterActivity(std::string json){
     data = "{startDiff: " + std::to_string(_startDiff);
     data += ", relayTimer: " + std::to_string(_relayTimer);
     data += "}";
-    
+
     return data;
+}
+
+std::string activities::dayStatsActivity(std::vector<int> timeStamps, std::vector<double> solarTemp, std::vector<double> houseTemp, std::vector<double> convexIn, std::vector<double> convexOut, std::vector<double> kWh){
+    std::cout << "activities_lib >> dayStats activity\n" << std::endl;
+
+    size_t strLen = kWh.size();
+    if (strLen > 24)
+    {
+        strLen = 24;
+    }
+
+    std::string str = "{state: dayStats, strLen: " + std::to_string(strLen) + ", ";
+
+    size_t i;
+    for (i = 0; i < (strLen-1); ++i)
+    {
+        str += "ts"   + std::to_string(i) + ": " + std::to_string(timeStamps[i]) + ", ";
+        str += "kWh"  + std::to_string(i) + ": " + std::to_string(kWh[i + (kWh.size() -strLen)]) + ", ";
+        str += "sol"  + std::to_string(i) + ": " + std::to_string(solarTemp[i + (solarTemp.size() -strLen)]) + ", ";
+        str += "hou"  + std::to_string(i) + ": " + std::to_string(houseTemp[i + (houseTemp.size() -strLen)]) + ", "; 
+        str += "cIn"  + std::to_string(i) + ": " + std::to_string(convexIn[i + (convexIn.size() -strLen)]) + ", ";
+        str += "cOut" + std::to_string(i) + ": " + std::to_string(convexOut[i + (convexOut.size() -strLen)]) + ", "; 
+    }
+
+    std::cout << "activities >> dayStatsActivity >> 23 ?= i: " << i << std::endl;
+
+    str += "ts"   + std::to_string(i) + ": " + std::to_string(timeStamps[i]) + ", ";
+    str += "kWh"  + std::to_string(i) + ": " + std::to_string(kWh[i + (kWh.size() -strLen)]) + ", ";
+    str += "sol"  + std::to_string(i) + ": " + std::to_string(solarTemp[i + (solarTemp.size() -strLen)]) + ", ";
+    str += "hou"  + std::to_string(i) + ": " + std::to_string(houseTemp[i + (houseTemp.size() -strLen)]) + ", ";
+    str += "cIn"  + std::to_string(i) + ": " + std::to_string(convexIn[i + (convexIn.size() -strLen)]) + ", ";
+    str += "cOut" + std::to_string(i) + ": " + std::to_string(convexOut[i + (convexOut.size() -strLen)]) + "}";
+
+    return str;
+}
+
+std::string activities::weekStatsActivity(std::vector<int> timeStamps, std::vector<double> solarTemp, std::vector<double> houseTemp, std::vector<double> convexIn, std::vector<double> convexOut, std::vector<double> kWh){
+    std::cout << "activities_lib >> weekStats activity\n" << std::endl;
+
+    size_t strLen = kWh.size();
+    std::string str = "{state: dayStats, strLen: " + std::to_string(strLen) + ", ";
+
+    for (size_t i = 0; i < (strLen-1); ++i)
+    {
+        str += "ts"   + std::to_string(i) + ": " + std::to_string(timeStamps[i]) + ", ";
+        str += "kWh"  + std::to_string(i) + ": " + std::to_string(kWh[i]) + ", ";
+        str += "sol"  + std::to_string(i) + ": " + std::to_string(solarTemp[i]) + ", ";
+        str += "hou"  + std::to_string(i) + ": " + std::to_string(houseTemp[i]) + ", "; 
+        str += "cIn"  + std::to_string(i) + ": " + std::to_string(convexIn[i]) + ", ";
+        str += "cOut" + std::to_string(i) + ": " + std::to_string(convexOut[i]) + ", "; 
+    }
+
+    str += "ts"   + std::to_string(strLen -1) + ": " + std::to_string(timeStamps[strLen -1]) + ", ";
+    str += "kWh"  + std::to_string(strLen -1) + ": " + std::to_string(kWh[strLen -1]) + ", ";
+    str += "sol"  + std::to_string(strLen -1) + ": " + std::to_string(solarTemp[strLen -1]) + ", ";
+    str += "hou"  + std::to_string(strLen -1) + ": " + std::to_string(houseTemp[strLen -1]) + ", ";
+    str += "cIn"  + std::to_string(strLen -1) + ": " + std::to_string(convexIn[strLen -1]) + ", ";
+    str += "cOut" + std::to_string(strLen -1) + ": " + std::to_string(convexOut[strLen -1]) + "}";
+
+    return str;
 }
 
 
