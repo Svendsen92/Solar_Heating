@@ -1,3 +1,17 @@
 
-gpio-4  --> common temperature sensors data pin
-gpio-17 --> relay pin
+DS18B20 temperature sensor:
+  Red-wire    --> 3.3v
+  Black-wire  --> Gnd
+  Yellow-wire --> gpio4 --> The temperature sensors have common data-pin
+	
+
+Relay:
+  vcc --> 5v
+  Gnd --> Gnd
+  Sig --> gpio17
+ 	
+YF-201s FlowMeter:
+  Red-wire    --> 5v
+  Black-wire  --> Gnd
+  Yellow-wire --> gpio2
+  
